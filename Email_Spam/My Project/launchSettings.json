@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Email_Spam": {
+      "commandName": "Project",
+      "commandLineArgs": "-t text1 -s text2 -m \"text3\""
+    }
+  }
+}

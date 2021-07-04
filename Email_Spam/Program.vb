@@ -18,26 +18,35 @@ Module Program
 
         Dim clArgs() As String = Environment.GetCommandLineArgs()
 
-        Dim type As String = String.Empty
-        Dim speed As String = String.Empty
+        Dim mailRecipient As String = String.Empty
+        Dim mailSubject As String = String.Empty
+        Dim message As String = String.Empty
 
         'Test to see if two switches and two values were paased in as args
         'if yes, parse array
 
-        If clArgs.Count = 5 Then
-            For i As Integer = 1 To 3 Step 2
+        '-t mail recipient
+        '-s subject
+        '-m message
+
+        If clArgs.Count = 7 Then
+            For i As Integer = 1 To 5 Step 2
                 If clArgs(i) = "-t" Then
-                    type = clArgs(i + 1)
-                Else
-                    speed = clArgs(i + 1)
+                    mailRecipient = clArgs(i + 1)
+                ElseIf clArgs(i) = "-s" Then
+                    mailSubject = clArgs(i + 1)
+                ElseIf clArgs(i) = "-m" Then
+                    message = clArgs(i + 1)
                 End If
             Next
         Else
-            Console.WriteLine("usage: -t -s")
+            Console.WriteLine("usage: -t -s -m")
         End If
 
-        Console.WriteLine(type)
-        Console.WriteLine(speed)
+        Console.WriteLine(mailRecipient)
+        Console.WriteLine(mailSubject)
+        Console.WriteLine(message)
+
         Console.ReadLine()
 
         'Console.WriteLine("Enter recipient address: ")
