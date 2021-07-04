@@ -9,25 +9,27 @@ Module Program
     Sub Main()
         Console.WriteLine("-Email Client-")
 
-        'Values:
+        'Values:(7 in total)
         '0 Full path of executing program with program name
         '1 First switch in command (-t)
-        '2 First value (text1)
+        '2 Recipient value ("blank@yahoo.com")
         '3 Second switch (-s)
-        '4 Second value (text2)
+        '4 Subject value ("Re: New email")
+        '5 third switch (-m)
+        '6 third value (mail body)
 
         Dim clArgs() As String = Environment.GetCommandLineArgs()
 
         Dim mailRecipient As String = String.Empty
         Dim mailSubject As String = String.Empty
-        Dim message As String = String.Empty
+        Dim mailBody As String = String.Empty
 
         'Test to see if two switches and two values were paased in as args
         'if yes, parse array
 
         '-t mail recipient
         '-s subject
-        '-m message
+        '-m mail body (can be written in html eg "hi <p> i'm batman")
 
         If clArgs.Count = 7 Then
             For i As Integer = 1 To 5 Step 2
@@ -36,7 +38,7 @@ Module Program
                 ElseIf clArgs(i) = "-s" Then
                     mailSubject = clArgs(i + 1)
                 ElseIf clArgs(i) = "-m" Then
-                    message = clArgs(i + 1)
+                    mailBody = clArgs(i + 1)
                 End If
             Next
         Else
@@ -45,45 +47,34 @@ Module Program
 
         Console.WriteLine(mailRecipient)
         Console.WriteLine(mailSubject)
-        Console.WriteLine(message)
+        Console.WriteLine(mailBody)
 
-        Console.ReadLine()
+        Using mm As New MailMessage(ConfigurationManager.AppSettings("FromEmail"), mailRecipient)
+            mm.Subject = mailSubject
+            mm.Body = mailBody
+            mm.IsBodyHtml = True
 
-        'Console.WriteLine("Enter recipient address: ")
-        'Dim mailRecipient As String = Console.ReadLine().Trim()
+            Dim smtp As New SmtpClient(ConfigurationManager.AppSettings("Host"), ConfigurationManager.AppSettings("Port"))
 
-        'Console.WriteLine("Enter the Subject: ")
-        'Dim mailSubject As String = Console.ReadLine().Trim()
+            Dim NetworkCred As New NetworkCredential(ConfigurationManager.AppSettings("Username"), ConfigurationManager.AppSettings("Password"))
+            smtp.UseDefaultCredentials = False
+            smtp.Credentials = NetworkCred
 
-        'Console.WriteLine("Please enter the Body: ")
-        'Dim mailBody = Console.ReadLine().Trim()
+            smtp.DeliveryMethod = SmtpDeliveryMethod.Network
+            smtp.EnableSsl = True
 
-        'Using mm As New MailMessage(ConfigurationManager.AppSettings("FromEmail"), mailRecipient)
-        '    mm.Subject = mailSubject
-        '    mm.Body = mailBody
-        '    mm.IsBodyHtml = True
+            Console.WriteLine("Sending Email...")
 
-        '    Dim smtp As New SmtpClient(ConfigurationManager.AppSettings("Host"), ConfigurationManager.AppSettings("Port"))
+            Try
+                smtp.Send(mm)
+                Console.WriteLine("Email Sent")
 
-        '    Dim NetworkCred As New NetworkCredential(ConfigurationManager.AppSettings("Username"), ConfigurationManager.AppSettings("Password"))
-        '    smtp.UseDefaultCredentials = False
-        '    smtp.Credentials = NetworkCred
-
-        '    smtp.DeliveryMethod = SmtpDeliveryMethod.Network
-        '    smtp.EnableSsl = True
-
-        '    Console.WriteLine("Sending Email...")
-
-        '    Try
-        '        smtp.Send(mm)
-        '        Console.WriteLine("Email Sent")
-
-        '    Catch ex As Exception
-        '        Console.WriteLine(ex.Message)
-        '    End Try
-        '    System.Threading.Thread.Sleep(3000)
-        '    Environment.Exit(0)
-        'End Using
+            Catch ex As Exception
+                Console.WriteLine(ex.Message)
+            End Try
+            System.Threading.Thread.Sleep(2000)
+            Environment.Exit(0)
+        End Using
 
     End Sub
 End Module
