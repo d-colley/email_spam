@@ -6,44 +6,75 @@ Imports System.Configuration
 
 'automated console email app
 Module Program
-    Sub Main(args As String())
+    Sub Main()
         Console.WriteLine("-Email Client-")
 
-        Console.WriteLine("Enter recipient address: ")
-        Dim mailRecipient As String = Console.ReadLine().Trim()
+        'Values:
+        '0 Full path of executing program with program name
+        '1 First switch in command (-t)
+        '2 First value (text1)
+        '3 Second switch (-s)
+        '4 Second value (text2)
 
-        Console.WriteLine("Enter the Subject: ")
-        Dim mailSubject As String = Console.ReadLine().Trim()
+        Dim clArgs() As String = Environment.GetCommandLineArgs()
 
-        Console.WriteLine("Please enter the Body: ")
-        Dim mailBody = Console.ReadLine().Trim()
+        Dim type As String = String.Empty
+        Dim speed As String = String.Empty
 
-        Using mm As New MailMessage(ConfigurationManager.AppSettings("FromEmail"), mailRecipient)
-            mm.Subject = mailSubject
-            mm.Body = mailBody
-            mm.IsBodyHtml = True
+        'Test to see if two switches and two values were paased in as args
+        'if yes, parse array
 
-            Dim smtp As New SmtpClient(ConfigurationManager.AppSettings("Host"), ConfigurationManager.AppSettings("Port"))
+        If clArgs.Count = 5 Then
+            For i As Integer = 1 To 3 Step 2
+                If clArgs(i) = "-t" Then
+                    type = clArgs(i + 1)
+                Else
+                    speed = clArgs(i + 1)
+                End If
+            Next
+        Else
+            Console.WriteLine("usage: -t -s")
+        End If
 
-            Dim NetworkCred As New NetworkCredential(ConfigurationManager.AppSettings("Username"), ConfigurationManager.AppSettings("Password"))
-            smtp.UseDefaultCredentials = False
-            smtp.Credentials = NetworkCred
+        Console.WriteLine(type)
+        Console.WriteLine(speed)
+        Console.ReadLine()
 
-            smtp.DeliveryMethod = SmtpDeliveryMethod.Network
-            smtp.EnableSsl = True
+        'Console.WriteLine("Enter recipient address: ")
+        'Dim mailRecipient As String = Console.ReadLine().Trim()
 
-            Console.WriteLine("Sending Email...")
+        'Console.WriteLine("Enter the Subject: ")
+        'Dim mailSubject As String = Console.ReadLine().Trim()
 
-            Try
-                smtp.Send(mm)
-                Console.WriteLine("Email Sent")
+        'Console.WriteLine("Please enter the Body: ")
+        'Dim mailBody = Console.ReadLine().Trim()
 
-            Catch ex As Exception
-                Console.WriteLine(ex.Message)
-            End Try
-            System.Threading.Thread.Sleep(3000)
-            Environment.Exit(0)
-        End Using
+        'Using mm As New MailMessage(ConfigurationManager.AppSettings("FromEmail"), mailRecipient)
+        '    mm.Subject = mailSubject
+        '    mm.Body = mailBody
+        '    mm.IsBodyHtml = True
+
+        '    Dim smtp As New SmtpClient(ConfigurationManager.AppSettings("Host"), ConfigurationManager.AppSettings("Port"))
+
+        '    Dim NetworkCred As New NetworkCredential(ConfigurationManager.AppSettings("Username"), ConfigurationManager.AppSettings("Password"))
+        '    smtp.UseDefaultCredentials = False
+        '    smtp.Credentials = NetworkCred
+
+        '    smtp.DeliveryMethod = SmtpDeliveryMethod.Network
+        '    smtp.EnableSsl = True
+
+        '    Console.WriteLine("Sending Email...")
+
+        '    Try
+        '        smtp.Send(mm)
+        '        Console.WriteLine("Email Sent")
+
+        '    Catch ex As Exception
+        '        Console.WriteLine(ex.Message)
+        '    End Try
+        '    System.Threading.Thread.Sleep(3000)
+        '    Environment.Exit(0)
+        'End Using
 
     End Sub
 End Module
